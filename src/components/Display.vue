@@ -11,6 +11,11 @@
     <br>
     <label for="speed">Detail: </label>
     <input type="range" min="8" max="30" step="1" v-model.number="scl">
+
+    <br>
+    <label for="speed">max height: </label>
+    <input type="range" min="50" max="350" step="1" v-model.number="maxSize">
+
   </div>
 </template>
 
@@ -27,6 +32,7 @@ export default {
       scl: 15,
       w: 800,
       h: 500,
+      maxSize: 200,
       terrain: [],
       position: {
         x: 0,
@@ -66,7 +72,7 @@ export default {
         let col = [];
         let yoff = Math.trunc(this.position.y)*this.steepness;
         for(let y = 0; y < this.rows; y++){
-          this.terrain[x][y] = sketch.noise(xoff, yoff)*200;
+          this.terrain[x][y] = sketch.noise(xoff, yoff)*this.maxSize;
           yoff += this.steepness;
         }
         xoff += this.steepness;
@@ -92,6 +98,7 @@ export default {
       sketch.fill(0,107,0);
       sketch.textureWrap(sketch.REPEAT);
       sketch.texture(this.tiles.grass);
+      //sketch.pointLight(255,255,255, 200,200, 50)
       //sketch.lights();
 
       //sketch.directionalLight(255,255,255, -200, -200, -1);
