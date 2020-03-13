@@ -35,7 +35,7 @@ export default {
       scl: 15,
       w: 800,
       h: 500,
-      wireFrame: false,
+      wireFrame: true,
       maxSize: 200,
       terrain: [],
       position: {
@@ -102,7 +102,7 @@ export default {
         //sketch.noFill();
         sketch.fill(0,107,0);
       }else{
-        sketch.textureWrap(sketch.REPEAT);
+        //sketch.textureWrap(sketch.REPEAT);
         sketch.texture(this.tiles.grass);
         //sketch.pointLight(255,255,255, 200,200, 50)
         //sketch.lights();
@@ -116,8 +116,27 @@ export default {
         sketch.beginShape(sketch.TRIANGLE_STRIP);
         for(let x = 0; x < this.cols; x++){
           let tileSize = this.scl;
-          sketch.vertex(x*this.scl, (y - (this.position.y % 1) )*this.scl, this.terrain[x][y], tileSize*(x), 0 );
-          sketch.vertex(x*this.scl, (y+1 - (this.position.y % 1))*this.scl, this.terrain[x][y+1], tileSize*(x), tileSize);
+          let paramsUpper = [
+            x*this.scl,
+            (y - (this.position.y % 1) )*this.scl,
+            this.terrain[x][y]
+          ];
+
+          let paramsLower = [
+            x*this.scl,
+            (y+1 - (this.position.y % 1))*this.scl,
+            this.terrain[x][y+1]
+          ];
+
+          if(!this.wireFrame){
+            //uv coords
+            paramsUpper.push(tileSize*(x), 0);
+            paramsLower.push(tileSize*(x), tileSize);
+          }
+
+          sketch.vertex( ...paramsUpper );
+          sketch.vertex( ...paramsLower );
+
         }
         sketch.endShape();
       }
