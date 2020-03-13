@@ -5,17 +5,20 @@
 
     <vue-p5 class="screen" v-on="{ setup, draw, keypressed, preload }"></vue-p5>
 
-    <label for="speed">Steepness: </label>
-    <input type="range" min="0" max="0.3" step="0.01" v-model.number="steepness">
+    <label for="steepness">Steepness: </label>
+    <input id="steepness" type="range" min="0" max="0.3" step="0.01" v-model.number="steepness">
 
     <br>
-    <label for="speed">Detail: </label>
-    <input type="range" min="8" max="30" step="1" v-model.number="scl">
+    <label for="detail">Detail: </label>
+    <input id="detail" type="range" min="8" max="30" step="1" v-model.number="scl">
 
     <br>
-    <label for="speed">max height: </label>
-    <input type="range" min="50" max="350" step="1" v-model.number="maxSize">
+    <label for="maxHeight">Max Height: </label>
+    <input id="maxHeight" type="range" min="50" max="350" step="1" v-model.number="maxSize">
 
+    <br>
+    <label for="wireFrame">WireFrame: </label>
+    <input id="wireFrame" type="checkbox" v-model="wireFrame" />
   </div>
 </template>
 
@@ -32,6 +35,7 @@ export default {
       scl: 15,
       w: 800,
       h: 500,
+      wireFrame: false,
       maxSize: 200,
       terrain: [],
       position: {
@@ -93,15 +97,20 @@ export default {
       sketch.translate(-this.w/2, -this.h/3, -130);
       sketch.rotateX(Math.PI/4);
 
-      sketch.stroke(0,200,0);
-      //sketch.noFill();
-      sketch.fill(0,107,0);
-      sketch.textureWrap(sketch.REPEAT);
-      sketch.texture(this.tiles.grass);
-      //sketch.pointLight(255,255,255, 200,200, 50)
-      //sketch.lights();
+      if(this.wireFrame){
+        sketch.stroke(0,200,0);
+        //sketch.noFill();
+        sketch.fill(0,107,0);
+      }else{
+        sketch.textureWrap(sketch.REPEAT);
+        sketch.texture(this.tiles.grass);
+        //sketch.pointLight(255,255,255, 200,200, 50)
+        //sketch.lights();
 
-      //sketch.directionalLight(255,255,255, -200, -200, -1);
+        //sketch.directionalLight(255,255,255, -200, -200, -1);
+      }
+
+
 
       for(let y = 0; y < (this.rows-1); y++){
         sketch.beginShape(sketch.TRIANGLE_STRIP);
