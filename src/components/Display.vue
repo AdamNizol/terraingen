@@ -34,7 +34,10 @@ export default {
         z: 0
       },
       speed: 0.2,
-      steepness: 0.14
+      steepness: 0.14,
+      tiles: {
+        grass: null
+      }
     }
 
     return data
@@ -73,31 +76,32 @@ export default {
       this.makeTerrain(sketch);
       sketch.frameRate(30);
       sketch.createCanvas(this.w,this.h, sketch.WEBGL);
+      this.tiles.grass = sketch.loadImage(require('@/images/tiles/Grass.png'));
+      this.tiles.grass.resize(this.scl,this.scl);
       //sketch.frameRate(10);
     },
     draw(sketch){
       this.position.y -= this.speed;
-
       this.updateTerrain(sketch);
-
-
       sketch.background(0);
-
       sketch.translate(-this.w/2, -this.h/3, -130);
+      sketch.rotateX(Math.PI/4);
 
       sketch.stroke(0,200,0);
       //sketch.noFill();
       sketch.fill(0,107,0);
+      sketch.textureWrap(sketch.REPEAT);
+      sketch.texture(this.tiles.grass);
+      //sketch.lights();
 
-      sketch.rotateX(Math.PI/4);
+      //sketch.directionalLight(255,255,255, -200, -200, -1);
+
       for(let y = 0; y < (this.rows-1); y++){
         sketch.beginShape(sketch.TRIANGLE_STRIP);
         for(let x = 0; x < this.cols; x++){
-          sketch.vertex(x*this.scl, (y - (this.position.y % 1) )*this.scl, this.terrain[x][y]);
-          sketch.vertex(x*this.scl, (y+1 - (this.position.y % 1))*this.scl, this.terrain[x][y+1]);
-          //sketch.vertex(x*this.scl, (y - (this.position.x % 1) )*this.scl, 0);
-          //sketch.vertex(x*this.scl, (y+1 - (this.position.x % 1) )*this.scl, 0);
-          //sketch.rect(x*this.scl, y*this.scl,this.scl, this.scl);
+          let tileSize = this.scl;
+          sketch.vertex(x*this.scl, (y - (this.position.y % 1) )*this.scl, this.terrain[x][y], tileSize*(x), 0 );
+          sketch.vertex(x*this.scl, (y+1 - (this.position.y % 1))*this.scl, this.terrain[x][y+1], tileSize*(x), tileSize);
         }
         sketch.endShape();
       }
