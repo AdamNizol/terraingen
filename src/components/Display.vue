@@ -1,7 +1,16 @@
 <template>
   <div class="hello">
-    <input type="range" min="-0.6" max="1" step="0.01" v-model="speed" />
+    <label for="speed">Speed:</label>
+    <input id="speed" type="range" min="-0.6" max="1" step="0.01" v-model.number="speed" />
+
     <vue-p5 class="screen" v-on="{ setup, draw, keypressed, preload }"></vue-p5>
+
+    <label for="speed">Steepness: </label>
+    <input type="range" min="0" max="0.3" step="0.01" v-model.number="steepness">
+
+    <br>
+    <label for="speed">Detail: </label>
+    <input type="range" min="8" max="30" step="1" v-model.number="scl">
   </div>
 </template>
 
@@ -15,7 +24,7 @@ export default {
   },
   data(){
     let data = {
-      scl: 10,
+      scl: 15,
       w: 800,
       h: 500,
       terrain: [],
@@ -24,40 +33,40 @@ export default {
         y: 0,
         z: 0
       },
-      speed: 0.2
+      speed: 0.2,
+      steepness: 0.14
     }
-    data.cols = data.w/data.scl;
-    data.rows = data.h/data.scl;
 
     return data
   },
   methods: {
     makeTerrain(sketch){
       this.terrain = [];
-      let yoff = this.position.y;
+      let xoff = this.position.x;
       for(let x = 0; x < this.cols; x++){
         let col = [];
-        let xoff = this.position.x;
+        let yoff = Math.trunc(this.position.y)*this.steepness;
         for(let y = 0; y < this.rows; y++){
-          col.push(sketch.noise(xoff, yoff)*200);
-          xoff += 0.14;
+          //col.push(sketch.noise(xoff, yoff)*200);
+          col.push(0)
+          yoff += this.steepness;
         }
-        yoff += 0.14;
+        xoff += this.steepness;
         this.terrain.push(col);
       }
     },
     updateTerrain(sketch){
-      let dOff = 0.14;
+      //this.makeTerrain(sketch)
 
       let xoff = this.position.x;
       for(let x = 0; x < this.cols; x++){
         let col = [];
-        let yoff = Math.trunc(this.position.y)*dOff;
+        let yoff = Math.trunc(this.position.y)*this.steepness;
         for(let y = 0; y < this.rows; y++){
           this.terrain[x][y] = sketch.noise(xoff, yoff)*200;
-          yoff += dOff;
+          yoff += this.steepness;
         }
-        xoff += dOff;
+        xoff += this.steepness;
       }
     },
     setup(sketch){
@@ -98,6 +107,22 @@ export default {
     },
     preload(sketch){
 
+    }
+  },
+  computed: {
+    cols: function () {
+      return this.w/this.scl;
+    },
+    rows: function () {
+      return this.h/this.scl;
+    }
+  },
+  watch: {
+    cols: function(val){
+      this.makeTerrain();
+    },
+    rows: function(val){
+      this.makeTerrain();
     }
   }
 };
