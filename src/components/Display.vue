@@ -32,6 +32,7 @@ export default {
   },
   data(){
     let data = {
+      textureSize: 16,
       scl: 15,
       w: 800,
       h: 500,
@@ -52,7 +53,20 @@ export default {
 
     return data
   },
+  created(){
+    window.addEventListener("resize", this.fitScreenToWindow);
+  },
+  destroyed() {
+    window.removeEventListener("resize", this.fitScreenToWindow);
+  },
+  mounted(){
+    this.fitScreenToWindow();
+  },
   methods: {
+    fitScreenToWindow(){
+      this.w = window.innerWidth - 20;
+      this.h = window.innerHeight - 160;
+    },
     makeTerrain(sketch){
       this.terrain = [];
       let xoff = this.position.x;
@@ -86,11 +100,15 @@ export default {
       this.makeTerrain(sketch);
       sketch.frameRate(30);
       sketch.createCanvas(this.w,this.h, sketch.WEBGL);
-      this.tiles.grass = sketch.loadImage(require('@/images/tiles/Grass.png'));
-      this.tiles.grass.resize(this.scl,this.scl);
+      this.tiles.grass = sketch.loadImage(require('@/assets/images/tiles/mcGrass.png'));
+      this.tiles.grass.resize(this.textureSize,this.textureSize);
       //sketch.frameRate(10);
     },
     draw(sketch){
+      if( (sketch.width != this.w) || (sketch.height != this.h) ){
+        sketch.resizeCanvas(this.w, this.h);
+      }
+
       this.position.y -= this.speed;
       this.updateTerrain(sketch);
       sketch.background(0);
@@ -102,7 +120,7 @@ export default {
         //sketch.noFill();
         sketch.fill(0,107,0);
       }else{
-        //sketch.textureWrap(sketch.REPEAT);
+        sketch.textureWrap(sketch.REPEAT);
         sketch.texture(this.tiles.grass);
         //sketch.pointLight(255,255,255, 200,200, 50)
         //sketch.lights();
@@ -130,8 +148,8 @@ export default {
 
           if(!this.wireFrame){
             //uv coords
-            paramsUpper.push(tileSize*(x), 0);
-            paramsLower.push(tileSize*(x), tileSize);
+            paramsUpper.push(this.textureSize*(x%2), 0);
+            paramsLower.push(this.textureSize*(x%2), this.textureSize);
           }
 
           sketch.vertex( ...paramsUpper );
@@ -169,4 +187,7 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.screen{
+  margin-top: 5px;
+}
 </style>
